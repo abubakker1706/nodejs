@@ -2,11 +2,20 @@
   "name": "nodejs",
   "version": "1.0.0",
   "description": "",
-  "main": "filesSystem.js",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
 }
