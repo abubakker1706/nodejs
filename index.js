@@ -1,9 +1,18 @@
 //const { request } = require("express");// this default type in package.json i.e common.js
 //const express = require("express");
 import express from "express";// this latest type i.e module in ES6
+import { Db, MongoClient } from "mongodb";
 const app = express();
 const PORT = 4000;
-
+const MONGO_URL = "mongodb://localhost:27017"
+async function createConnection(){
+                         const client = new MongoClient(MONGO_URL)
+                         await client.connect();
+                         console.log('Mongo is Connected ')
+                         return client;
+}
+const client = await createConnection()
+app.use(express.json())// app use will covert data into json
 const movies = [
   {
     id: "100",
@@ -75,18 +84,44 @@ const movies = [
   },
 ];
 app.get("/", function (req, res) {
-  res.send("Hello World");
+  res.send("Hello World........");
 });
-app.get("/movies", function (req, res) {
-  res.send(movies);
+app.get("/movies", async function (req, res) {
+  //res.send(movies);
+  const movie = await client.db("b27we").collection("movies").find({}).toArray()//to array we coverting cusor(pagimnation) to array so that we can see all the data 
+  console.log (movie)
+  
+  //const movie = movies.find(mv=>(mv.id===id));
+  res.send(movie)
 });
 
 app.listen(PORT, () => console.log(`Server is startes ${PORT}`));
 // getting data by id ,here we are using find method instead of filter 
 // filter will return in array but find will return in object and also find will match first result
-app.get('/movies/:id', function(req,res){
-console.log("request.params",req.params)
+app.get('/movies/:id' , async function(req,res){
+  console.log("req.params",req.params)
 const { id }= req.params;
-const movie = movies.find(mv=>(mv.id===id));
+  const movie = await client.db("b27we").collection("movies").findOne({id:id})
+  //db await client.db("b27we").collection("movies").deleteOne({id:id})
+console.log (movie)
+
+//const movie = movies.find(mv=>(mv.id===id));
 res.send(movie)
+})
+app.put('/movies/:id' , async function(req,res){
+  console.log("req.params",req.params)
+const { id }= req.params;
+const updatedData = req.body // from postman app
+  const movie = await client.db("b27we").collection("movies").updateOne({id:id},{$set:updatedData})
+  //db await client.db("b27we").collection("movies").deleteOne({id:id})
+console.log (movie)
+
+//const movie = movies.find(mv=>(mv.id===id));
+res.send(movie)
+})
+app.post("/movies", async function (req, res) {
+const newMovie = req.body
+const result =  await client.db("b27we").collection("movies").insertMany(newMovie)
+
+  res.send(result);
 })
