@@ -1,10 +1,14 @@
 //const { request } = require("express");// this default type in package.json i.e common.js
 //const express = require("express");
+import dotenv from 'dotenv';
+dotenv.config();
+console.log(process.env. MONGO_URL)
 import express from "express";// this latest type i.e module in ES6
 import { Db, MongoClient } from "mongodb";
 const app = express();
 const PORT = 4000;
-const MONGO_URL = "mongodb://localhost:27017"
+//const MONGO_URL = "mongodb://localhost:27017"
+const MONGO_URL = process.env. MONGO_URL
 async function createConnection(){
                          const client = new MongoClient(MONGO_URL)
                          await client.connect();
